@@ -80,12 +80,13 @@ class Player(object):
 					self.rect.top = enemy.rect.bottom
 
 class Enemy(object):
-	def __init__(self, x, y, width, height, ):
+	def __init__(self, x, y, width, height, loc):
 		enemies.append(self)
 		self.x = x
 		self.y = y
 		self.rect = pygame.Rect(x, y, width, height)
 		enemies.append(self)
+		self.loc = loc
 
 	def move(self, dx, dy):
 		self.rect.x += dx
@@ -96,8 +97,10 @@ class Enemy(object):
 			if self.rect.colliderect(wall.rect): # When enemy collides with wall
 				if dx < 0: # Moving left; Hit the right side of the wall
 					self.rect.left = wall.rect.right
+					self.loc = "hit_right"
 				if dx > 0: # Moving right; Hit the left side of the wall
 					self.rect.right = wall.rect.left
+					self.loc = "hit_left"
 				if dy > 0: # Moving down; Hit the top side of the wall
 					self.rect.bottom = wall.rect.top
 				if dy < 0: # Moving up; Hit the bottom side of the wall
@@ -190,12 +193,21 @@ def map_update():
 def enemy_AI():
 	for enemy in enemies:
 		if player.rect.x < enemy.rect.x:
-			enemy.move(-1, 0)
+			if enemy.move(-1, 0) == 'hit_right':
+				enemy.move(-1, -1)
+			else:
+				enemy.move(-1, 0)
+				enemy.loc = 'none'
+
 		elif player.rect.x > enemy.rect.x:
-			enemy.move(1, 0)
+			if enemy.move(1, 0) == 'hit_left':
+				enemy.move(1, -1)
+			else:
+				enemy.move(1, 0)
+				enemy.loc = 'none'
+
 		elif player.rect.x == enemy.rect.x:
 			enemy.move(0, 0)
-
 
 # Initialise pygame
 os.environ["SDL_VIDEO_CENTERED"] = "1"
@@ -210,7 +222,7 @@ walls = [] # List to hold the walls
 airs = []
 enemies = [] # Lsit all the enemies
 player = Player(30, 300, 30, 60, False, 100, False) # Create the player
-enemy = Enemy(300, 300, 30, 90) # Create the Enemy
+enemy = Enemy(300, 300, 30, 90, 'none') # Create the Enemy
 health = Health()
 font = pygame.font.SysFont(None, 50)
 LEFT = 1
@@ -249,7 +261,8 @@ while running:
 # Gravity
 	gravity(player)
 	gravity(enemy)
-
+	
+# Enemy AI
 	enemy_AI()
 
 # Leave game, and jump
