@@ -2,12 +2,6 @@
 
 import pygame, os
 
-class Health(object):
-	def __init__(self):
-		self.rect = pygame.Rect(100, 100, 200, 50)
-	def display(self):
-		return player.health
-
 class Player(object):
 	def __init__(self, x, y, width, height, falling, health, crouching):
 		self.x = x
@@ -160,16 +154,12 @@ def place(block, pos):
 			y_cord = y
 			index_y = y/30
 	if enemy.rect.y-20 <= y_cord and y_cord <= enemy.rect.y+(enemy.height-5) and enemy.rect.x-20 <= x_cord and x_cord <= enemy.rect.x+20:
-		print "trying to place on enemy"
 		return
 	if player.rect.y-20 <= y_cord and y_cord <= player.rect.y+(player.height - 5) and player.rect.x-20 <= x_cord and x_cord <= player.rect.x+20:
-		print "trying to place on player"
 		return
 	if map[index_y][index_x][0] == 1:
 		return
-
 	map[index_y][index_x][0] = 1
-	print "placed a block"
 
 def destroy(block, pos):
 	x_cord = pos[0]
@@ -294,7 +284,7 @@ while running:
 		player.uncrouch()
 
 # Display Health
-	text = font.render(str(health.display()), True, (0, 128, 0))
+	text = font.render(str(player.health), True, (0, 128, 0))
 
 # Game Over
 	if player.health < 1:
@@ -310,7 +300,6 @@ while running:
 	pygame.draw.rect(screen, (200, 103, 123), player.rect)
 	for enemy in enemies:
 		pygame.draw.rect(screen, (50, 100, 50), enemy.rect)
-	pygame.draw.rect(screen, (50, 60, 70), health.rect)
 
 	screen.blit(text, (200, 110))
 
