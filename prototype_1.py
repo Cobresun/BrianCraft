@@ -187,6 +187,16 @@ def map_update():
 		y += 30
 		x = 0
 
+def enemy_AI():
+	for enemy in enemies:
+		if player.rect.x < enemy.rect.x:
+			enemy.move(-1, 0)
+		elif player.rect.x > enemy.rect.x:
+			enemy.move(1, 0)
+		elif player.rect.x == enemy.rect.x:
+			enemy.move(0, 0)
+
+
 # Initialise pygame
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
@@ -229,7 +239,6 @@ map = [
 	]
 map_update()
 
-
 running = True
 
 while running:
@@ -240,6 +249,8 @@ while running:
 # Gravity
 	gravity(player)
 	gravity(enemy)
+
+	enemy_AI()
 
 # Leave game, and jump
 	for e in pygame.event.get():
@@ -262,9 +273,9 @@ while running:
 # Move the player if an arrow key is pressed
 	key = pygame.key.get_pressed()
 	if key[pygame.K_a]:
-		player.move(-2, 0)
+		player.move(-3, 0)
 	if key[pygame.K_d]:
-		player.move(2, 0)
+		player.move(3, 0)
  	if key[pygame.K_LSHIFT]:
 		player.crouch()
 	else:
