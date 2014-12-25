@@ -79,26 +79,6 @@ class Player(object):
 				if dy < 0: # Moving up; Hit the bottom side of the enemy
 					self.rect.top = enemy.rect.bottom
 
-class Inventory(object):
-	def __init__(self, items):
-		self.items = items
-		self.rect = pygame.Rect(400, 100, 400, 50)
-		
-	def add(self, block):
-		if block in self.items:
-			self.items[block] += 1
-		else:
-			self.item[block] = 1
-
-	def remove(self, block):
-		if block in self.items:
-			self.items[block] -= 1
-
-	#def display(self):
-		#for block in self.items:
-			#block.rect = pygame.Rect(200, 200, 50, 50)
-			#block.colour = (30, 45, 55)
-
 class Enemy(object):
 	def __init__(self, x, y, width, height, loc):
 		enemies.append(self)
@@ -181,7 +161,6 @@ def place(block, pos):
 			y_cord = y
 			index_y = y/30
 	map[index_y][index_x][0] = 1
-	inventory.remove(block)
 
 def destroy(block, pos):
 	x_cord = pos[0]
@@ -196,7 +175,6 @@ def destroy(block, pos):
 			y_cord = y
 			index_y = y/30
 	map[index_y][index_x][0] = 0
-	inventory.add(block)
 
 def map_update():
 	global walls
@@ -254,7 +232,6 @@ map = [
 	]
 map_update()
 
-inventory = Inventory({"wall":5})
 
 running = True
 
@@ -262,8 +239,6 @@ while running:
 
 # Sets framerate
 	clock.tick(60)
-
-	#inventory.display()
 
 # Player gravity
 	gravity(player)
@@ -323,9 +298,6 @@ while running:
 	for enemy in enemies:
 		pygame.draw.rect(screen, (50, 100, 50), enemy.rect)
 	pygame.draw.rect(screen, (50, 60, 70), health.rect)
-	pygame.draw.rect(screen, (50, 100, 70), inventory.rect)
-	for block in inventory.items:
-		pygame.draw.rect(screen, (30, 45, 55), inventory.rect)
 
 	screen.blit(text, (150, 110))
 
