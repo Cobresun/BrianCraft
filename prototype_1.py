@@ -80,12 +80,11 @@ class Player(object):
 					self.rect.top = enemy.rect.bottom
 
 class Enemy(object):
-	def __init__(self, x, y, width, height, loc):
+	def __init__(self, x, y, width, height, ):
 		enemies.append(self)
 		self.x = x
 		self.y = y
 		self.rect = pygame.Rect(x, y, width, height)
-		self.loc = loc
 		enemies.append(self)
 
 	def move(self, dx, dy):
@@ -97,10 +96,8 @@ class Enemy(object):
 			if self.rect.colliderect(wall.rect): # When enemy collides with wall
 				if dx < 0: # Moving left; Hit the right side of the wall
 					self.rect.left = wall.rect.right
-					self.loc = "hit_left_block"
 				if dx > 0: # Moving right; Hit the left side of the wall
 					self.rect.right = wall.rect.left
-					self.loc = "hit_right_block"
 				if dy > 0: # Moving down; Hit the top side of the wall
 					self.rect.bottom = wall.rect.top
 				if dy < 0: # Moving up; Hit the bottom side of the wall
@@ -203,7 +200,7 @@ walls = [] # List to hold the walls
 airs = []
 enemies = [] # Lsit all the enemies
 player = Player(30, 300, 30, 60, False, 100, False) # Create the player
-enemy = Enemy(300, 300, 30, 90, "hit_right_block") # Create the Enemy
+enemy = Enemy(300, 300, 30, 90) # Create the Enemy
 health = Health()
 font = pygame.font.SysFont(None, 50)
 LEFT = 1
@@ -240,16 +237,9 @@ while running:
 # Sets framerate
 	clock.tick(60)
 
-# Player gravity
+# Gravity
 	gravity(player)
-	
-# Enemies Move
-	for enemy in enemies:
-		gravity(enemy)
-		if enemy.loc == "hit_right_block":
-			enemy.move(-1, 0)
-		else:
-			enemy.move(1, 0)
+	gravity(enemy)
 
 # Leave game, and jump
 	for e in pygame.event.get():
