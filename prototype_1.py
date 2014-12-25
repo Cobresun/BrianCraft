@@ -80,10 +80,12 @@ class Player(object):
 					self.rect.top = enemy.rect.bottom
 
 class Enemy(object):
-	def __init__(self, x, y, width, height, ):
+	def __init__(self, x, y, width, height):
 		enemies.append(self)
 		self.x = x
 		self.y = y
+		self.height = height
+		self.width = width
 		self.rect = pygame.Rect(x, y, width, height)
 		enemies.append(self)
 
@@ -157,7 +159,17 @@ def place(block, pos):
 		if y <= y_cord <= y+30:
 			y_cord = y
 			index_y = y/30
+	if enemy.rect.y-20 <= y_cord and y_cord <= enemy.rect.y+(enemy.height-5) and enemy.rect.x-20 <= x_cord and x_cord <= enemy.rect.x+20:
+		print "trying to place on enemy"
+		return
+	if player.rect.y-20 <= y_cord and y_cord <= player.rect.y+(player.height - 5) and player.rect.x-20 <= x_cord and x_cord <= player.rect.x+20:
+		print "trying to place on player"
+		return
+	if map[index_y][index_x][0] == 1:
+		return
+
 	map[index_y][index_x][0] = 1
+	print "placed a block"
 
 def destroy(block, pos):
 	x_cord = pos[0]
@@ -196,7 +208,6 @@ def enemy_AI():
 		elif player.rect.x == enemy.rect.x:
 			enemy.move(0, 0)
 
-
 # Initialise pygame
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
@@ -209,8 +220,8 @@ clock = pygame.time.Clock()
 walls = [] # List to hold the walls
 airs = []
 enemies = [] # Lsit all the enemies
-player = Player(30, 300, 30, 60, False, 100, False) # Create the player
-enemy = Enemy(300, 300, 30, 90) # Create the Enemy
+player = Player(30, 300, 25, 55, False, 100, False) # Create the player
+enemy = Enemy(500, 300, 30, 90) # Create the Enemy
 health = Health()
 font = pygame.font.SysFont(None, 50)
 LEFT = 1
@@ -250,6 +261,7 @@ while running:
 	gravity(player)
 	gravity(enemy)
 
+# Enemy AI
 	enemy_AI()
 
 # Leave game, and jump
@@ -300,6 +312,6 @@ while running:
 		pygame.draw.rect(screen, (50, 100, 50), enemy.rect)
 	pygame.draw.rect(screen, (50, 60, 70), health.rect)
 
-	screen.blit(text, (150, 110))
+	screen.blit(text, (200, 110))
 
 	pygame.display.flip()
