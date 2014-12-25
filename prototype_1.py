@@ -196,19 +196,6 @@ def enemy_AI():
 		elif player.rect.x == enemy.rect.x:
 			enemy.move(0, 0)
 
-		x_cord = enemy.rect.bottom
-		y_cord = enemy.rect.y
-		for x in range(0, 900, 30):
-			if x <= x_cord and x_cord <= x+30:
-				x_cord = x
-				index_x = x/30
-		for y in range(0, 830, 30):
-			if y <= y_cord <= y+30:
-				y_cord = y
-				index_y = y/30
-		if map[index_y][index_x][0] == 1:
-			enemy.move(0, 1)
-
 
 # Initialise pygame
 os.environ["SDL_VIDEO_CENTERED"] = "1"
@@ -216,7 +203,7 @@ pygame.init()
 
 # Set up the display
 pygame.display.set_caption("BrianCraft")
-screen = pygame.display.set_mode((900, 530))
+screen = pygame.display.set_mode((900, 830))
 clock = pygame.time.Clock()
 
 walls = [] # List to hold the walls
@@ -260,9 +247,8 @@ while running:
 	clock.tick(60)
 
 # Gravity
-	#gravity(player)
-	#for enemy in enemies:
-		#gravity(enemy)
+	gravity(player)
+	gravity(enemy)
 
 	enemy_AI()
 
@@ -290,10 +276,6 @@ while running:
 		player.move(-3, 0)
 	if key[pygame.K_d]:
 		player.move(3, 0)
-	if key[pygame.K_s]:
-		player.move(0, 3)
-	if key[pygame.K_w]:
-		player.move(0, -3)
  	if key[pygame.K_LSHIFT]:
 		player.crouch()
 	else:
