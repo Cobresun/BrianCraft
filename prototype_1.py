@@ -28,7 +28,6 @@ class Player(object):
 			if y <= y_cord <= y+30:
 				y_cord = y
 				index_y = y/30
-		print map[index_y][index_x][0]
 		if (map[index_y][index_x][0] == 1 and map[index_y][index_x+1][0] == 1):
 			return
 		elif (map[index_y][index_x-1][0] == 1 and map[index_y][index_x][0] == 1): 
@@ -72,6 +71,26 @@ class Player(object):
 					self.rect.bottom = enemy.rect.top
 				if dy < 0: # Moving up; Hit the bottom side of the enemy
 					self.rect.top = enemy.rect.bottom
+	def place(self, block, pos):
+		x_cord = pos[0]
+		y_cord = pos[1]
+
+		#if block == "wall":
+		for x in range(0, 900, 30):
+			if x <= x_cord and x_cord <= x+30:
+				x_cord = x
+				index_x = x/30
+		for y in range(0, 830, 30):
+			if y <= y_cord <= y+30:
+				y_cord = y
+				index_y = y/30
+		if enemy.rect.y-20 <= y_cord and y_cord <= enemy.rect.y+(enemy.height-5) and enemy.rect.x-20 <= x_cord and x_cord <= enemy.rect.x+20:
+			return
+		if player.rect.y-20 <= y_cord and y_cord <= player.rect.y+(player.height - 5) and player.rect.x-20 <= x_cord and x_cord <= player.rect.x+20:
+			return
+		if map[index_y][index_x][0] == 1:
+			return
+		map[index_y][index_x][0] = 1
 
 class Enemy(object):
 	def __init__(self, x, y, width, height, health):
@@ -142,27 +161,6 @@ def gravity(player):
 				player.rect.bottom = wall.rect.top
 				player.falling = False
 			surface = True		
-
-def place(block, pos):
-	x_cord = pos[0]
-	y_cord = pos[1]
-
-	#if block == "wall":
-	for x in range(0, 900, 30):
-		if x <= x_cord and x_cord <= x+30:
-			x_cord = x
-			index_x = x/30
-	for y in range(0, 830, 30):
-		if y <= y_cord <= y+30:
-			y_cord = y
-			index_y = y/30
-	if enemy.rect.y-20 <= y_cord and y_cord <= enemy.rect.y+(enemy.height-5) and enemy.rect.x-20 <= x_cord and x_cord <= enemy.rect.x+20:
-		return
-	if player.rect.y-20 <= y_cord and y_cord <= player.rect.y+(player.height - 5) and player.rect.x-20 <= x_cord and x_cord <= player.rect.x+20:
-		return
-	if map[index_y][index_x][0] == 1:
-		return
-	map[index_y][index_x][0] = 1
 
 def destroy(block, pos):
 	x_cord = pos[0]
@@ -275,11 +273,11 @@ while running:
 				player.move(0, -60)
 		if e.type == pygame.MOUSEBUTTONUP and e.button == RIGHT:
 			pos = pygame.mouse.get_pos()
-			place("wall", pos) # Places the block at that x-y coord
+			player.place("wall", pos) # Places the block at that x-y coord
 			map_update() 
 		if e.type == pygame.MOUSEBUTTONUP and e.button == LEFT:
 			pos = pygame.mouse.get_pos()
-			destroy("wall", pos) # Places the block at that x-y coord
+			destroy("wall", pos) # Breaks the block at that x-y coord
 			map_update()
 
 # Move the player if an arrow key is pressed
