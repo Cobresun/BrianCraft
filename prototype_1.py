@@ -92,6 +92,20 @@ class Player(object):
 			return
 		map[index_y][index_x][0] = 1
 
+	def destroy(self, block, pos):
+		x_cord = pos[0]
+		y_cord = pos[1]
+		#if block == "wall":
+		for x in range(0, 900, 30):
+			if x <= x_cord and x_cord <= x+30:
+				x_cord = x
+				index_x = x/30
+		for y in range(0, 830, 30):
+			if y <= y_cord <= y+30:
+				y_cord = y
+				index_y = y/30
+		map[index_y][index_x][0] = 0
+
 class Enemy(object):
 	def __init__(self, x, y, width, height, health):
 		enemies.append(self)
@@ -141,7 +155,7 @@ class Enemy(object):
 						self.rect.bottom = enemy.rect.top
 					if dy < 0: # Moving up; Hit the bottom side of the player
 						self.rect.top = enemy.rect.bottom
-	
+
 class Wall(object):
 	def __init__(self, x, y):
 		walls.append(self) # Make it so that this adds it to the map
@@ -161,20 +175,6 @@ def gravity(player):
 				player.rect.bottom = wall.rect.top
 				player.falling = False
 			surface = True		
-
-def destroy(block, pos):
-	x_cord = pos[0]
-	y_cord = pos[1]
-	#if block == "wall":
-	for x in range(0, 900, 30):
-		if x <= x_cord and x_cord <= x+30:
-			x_cord = x
-			index_x = x/30
-	for y in range(0, 830, 30):
-		if y <= y_cord <= y+30:
-			y_cord = y
-			index_y = y/30
-	map[index_y][index_x][0] = 0
 
 def map_update():
 	global walls
@@ -277,7 +277,7 @@ while running:
 			map_update() 
 		if e.type == pygame.MOUSEBUTTONUP and e.button == LEFT:
 			pos = pygame.mouse.get_pos()
-			destroy("wall", pos) # Breaks the block at that x-y coord
+			player.destroy("wall", pos) # Breaks the block at that x-y coord
 			map_update()
 
 # Move the player if an arrow key is pressed
