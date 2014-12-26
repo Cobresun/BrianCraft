@@ -110,6 +110,18 @@ class Enemy(object):
 				self.rect.bottom = player.rect.top
 			if dy < 0: # Moving up; Hit the bottom side of the player
 				self.rect.top = player.rect.bottom
+		
+		for enemy in enemies:
+			if enemy != self:
+				if self.rect.colliderect(enemy.rect): # When enemy collies with player
+					if dx < 0: # Moving left; Hit the right side of the player
+						self.rect.left = enemy.rect.right
+					if dx > 0: # Moving right; Hit the left side of the player
+						self.rect.right = enemy.rect.left
+					if dy > 0: # Moving down; Hit the top side of the player
+						self.rect.bottom = enemy.rect.top
+					if dy < 0: # Moving up; Hit the bottom side of the player
+						self.rect.top = enemy.rect.bottom
 	
 class Wall(object):
 	def __init__(self, x, y):
@@ -213,6 +225,7 @@ airs = []
 enemies = [] # Lsit all the enemies
 player = Player(30, 300, 25, 55, False, 100, False) # Create the player
 enemy = Enemy(500, 300, 30, 90, 500) # Create the Enemy
+enemy_2 = Enemy(200, 300, 30, 90, 200)
 font = pygame.font.SysFont(None, 50)
 LEFT = 1
 RIGHT = 3
@@ -249,7 +262,8 @@ while running:
 
 # Gravity
 	gravity(player)
-	gravity(enemy)
+	for enemy in enemies:
+		gravity(enemy)
 
 # Enemy AI
 	enemy_AI()
@@ -272,7 +286,6 @@ while running:
 			destroy("wall", pos) # Places the block at that x-y coord
 			map_update()
 
-
 # Move the player if an arrow key is pressed
 	key = pygame.key.get_pressed()
 	if key[pygame.K_a]:
@@ -283,10 +296,6 @@ while running:
 		player.crouch()
 	else:
 		player.uncrouch()
-
-# Display Health
-	player_health = font.render(str(player.health), True, (0, 128, 0))
-	enemy_health = font.render(str(enemy.health), True, (255, 51, 51))
 
 # Game Over
 	if player.health < 1:
@@ -302,8 +311,10 @@ while running:
 	pygame.draw.rect(screen, (200, 103, 123), player.rect)
 	for enemy in enemies:
 		pygame.draw.rect(screen, (50, 100, 50), enemy.rect)
-
+	player_health = font.render(str(player.health), True, (0, 128, 0))
 	screen.blit(player_health, (player.rect.x-20, player.rect.y-40))
-	screen.blit(enemy_health, (enemy.rect.x-20, enemy.rect.y-40))
+	for enemy in enemies:
+		enemy_health = font.render(str(enemy.health), True, (255, 51, 51))
+		screen.blit(enemy_health, (enemy.rect.x-20, enemy.rect.y-40))
 
 	pygame.display.flip()

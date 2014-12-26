@@ -1,4 +1,2 @@
-Crouching
-	1. If you let go of shift, and walk (shifted) to the left, player teleports to the right
-	2. Doesn't always stay shifted when its under blocks
-		Teleports above all blocks to get to nearest open space above
+Crouching straight up doesnt work
+	
