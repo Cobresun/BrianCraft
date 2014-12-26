@@ -74,14 +74,13 @@ class Player(object):
 					self.rect.top = enemy.rect.bottom
 
 class Enemy(object):
-	def __init__(self, x, y, width, height, health):
+	def __init__(self, x, y, width, height):
 		enemies.append(self)
 		self.x = x
 		self.y = y
 		self.height = height
 		self.width = width
 		self.rect = pygame.Rect(x, y, width, height)
-		self.health = health
 		enemies.append(self)
 
 	def move(self, dx, dy):
@@ -130,18 +129,6 @@ class Air(object):
 
 	def destroy(self):
 		walls.remove(self)
-
-class Gun(object):
-	def __init__(self, direction):
-		self.direction = direction
-		guns.append(self)
-		self.rect = pygame.Rect(player.rect.x, player.rect.y, 5, 5)
-
-	def update(self, direction):
-		if direction == "right":
-			self.rect.x += 1
-		elif direction == "left":
-			self.rect.x -= 1
 
 def gravity(player):
 	surface = False
@@ -223,9 +210,9 @@ clock = pygame.time.Clock()
 walls = [] # List to hold the walls
 airs = []
 enemies = [] # Lsit all the enemies
-guns = []
 player = Player(30, 300, 25, 55, False, 100, False) # Create the player
-enemy = Enemy(500, 300, 30, 90, 500) # Create the Enemy
+enemy = Enemy(500, 300, 30, 90) # Create the Enemy
+health = Health()
 font = pygame.font.SysFont(None, 50)
 LEFT = 1
 RIGHT = 3
@@ -281,10 +268,9 @@ while running:
 			place("wall", pos) # Places the block at that x-y coord
 			map_update() 
 		if e.type == pygame.MOUSEBUTTONUP and e.button == LEFT:
-			#pos = pygame.mouse.get_pos()
-			#destroy("wall", pos) # Places the block at that x-y coord
-			#map_update()
-			Gun("left")
+			pos = pygame.mouse.get_pos()
+			destroy("wall", pos) # Places the block at that x-y coord
+			map_update()
 
 # Move the player if an arrow key is pressed
 	key = pygame.key.get_pressed()
@@ -298,16 +284,12 @@ while running:
 		player.uncrouch()
 
 # Display Health
-	player_health = font.render(str(player.health), True, (0, 128, 0))
-	enemy_health = font.render(str(enemy.health), True, (255, 51, 51))
+	text = font.render(str(player.health), True, (0, 128, 0))
 
 # Game Over
 	if player.health < 1:
 		print 'Game Over!'
 		break
-
-for gun in guns:
-	gun.update("left")
 
 # Drawing the scene
 	screen.fill((0, 0, 0))
@@ -318,11 +300,7 @@ for gun in guns:
 	pygame.draw.rect(screen, (200, 103, 123), player.rect)
 	for enemy in enemies:
 		pygame.draw.rect(screen, (50, 100, 50), enemy.rect)
-	if guns > 0:
-		for gun in guns:
-			pygame.draw.rect(screen, (30, 100, 200), gun.rect)
 
-	screen.blit(player_health, (player.rect.x-20, player.rect.y-40))
-	screen.blit(enemy_health, (enemy.rect.x-20, enemy.rect.y-40))
+	screen.blit(text, (200, 110))
 
 	pygame.display.flip()
