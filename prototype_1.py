@@ -133,16 +133,6 @@ class Wall(object):
 	def destroy(self):
 		walls.remove(self)
 
-class Air(object):
-	def __init__(self, x, y):
-		airs.append(self)
-		self.x = x
-		self.y = y
-		self.rect = pygame.Rect(x, y, 30, 30)
-
-	def destroy(self):
-		walls.remove(self)
-
 def gravity(player):
 	surface = False
 	while surface == False:
@@ -195,9 +185,7 @@ def map_update():
 	for row in map:
 		for col in row:
 			if col[0] == 1:
-				Wall(x, y)
-			#if col == "0":
-				#Air(x, y)		
+				Wall(x, y)	
 			x += 30
 		y += 30
 		x = 0
@@ -221,11 +209,9 @@ screen = pygame.display.set_mode((900, 830))
 clock = pygame.time.Clock()
 
 walls = [] # List to hold the walls
-airs = []
 enemies = [] # Lsit all the enemies
 player = Player(30, 300, 25, 55, False, 100, False) # Create the player
 enemy = Enemy(500, 300, 30, 90, 500) # Create the Enemy
-enemy_2 = Enemy(200, 300, 30, 90, 200)
 font = pygame.font.SysFont(None, 50)
 LEFT = 1
 RIGHT = 3
@@ -306,8 +292,6 @@ while running:
 	screen.fill((0, 0, 0))
 	for wall in walls:
 		pygame.draw.rect(screen, (100, 100, 100), wall.rect)
-	for air in airs:
-		pygame.draw.rect(screen, (255, 255, 255), air.rect)
 	pygame.draw.rect(screen, (200, 103, 123), player.rect)
 	for enemy in enemies:
 		pygame.draw.rect(screen, (50, 100, 50), enemy.rect)
