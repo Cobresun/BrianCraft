@@ -1,6 +1,8 @@
 # Project began Dec 20, 2014 
 
 import pygame, os
+from map import map
+from map import map_update
 
 class Player(object):
 	def __init__(self, x, y, width, height, falling, health, crouching):
@@ -28,7 +30,6 @@ class Player(object):
 			if y <= y_cord <= y+30:
 				y_cord = y
 				index_y = y/30
-		print map[index_y][index_x][0]
 		if (map[index_y][index_x][0] == 1 and map[index_y][index_x+1][0] == 1):
 			return
 		elif (map[index_y][index_x-1][0] == 1 and map[index_y][index_x][0] == 1): 
@@ -177,7 +178,7 @@ def destroy(block, pos):
 			y_cord = y
 			index_y = y/30
 	map[index_y][index_x][0] = 0
-
+"""
 def map_update():
 	global walls
 	walls = []
@@ -189,7 +190,7 @@ def map_update():
 			x += 30
 		y += 30
 		x = 0
-
+"""
 def enemy_AI():
 	for enemy in enemies:
 		if player.rect.x < enemy.rect.x:
@@ -215,7 +216,7 @@ enemy = Enemy(500, 300, 30, 90, 500) # Create the Enemy
 font = pygame.font.SysFont(None, 50)
 LEFT = 1
 RIGHT = 3
-
+"""
 # Move map to different file at some point
 map = [
 	[[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1]],
@@ -247,6 +248,7 @@ map = [
 	[[1],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[1]],
 	[[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1]],
 	]
+"""
 map_update()
 
 running = True
