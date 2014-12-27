@@ -60,6 +60,18 @@ class Player(object):
 					self.rect.bottom = wall.rect.top
 				if dy < 0: # Moving up; Hit the bottom side of the wall
 					self.rect.top = wall.rect.bottom
+
+		for border in borders:
+			if self.rect.colliderect(border.rect): # When player collies with wall
+				if dx < 0: # Moving left; Hit the right side of the wall
+					self.rect.left = border.rect.right
+				if dx > 0: # Moving right; Hit the left side of the wall
+					self.rect.right = border.rect.left
+				if dy > 0: # Moving down; Hit the top side of the wall
+					self.rect.bottom = border.rect.top
+				if dy < 0: # Moving up; Hit the bottom side of the wall
+					self.rect.top = border.rect.bottom
+
 		for enemy in enemies:
 			if self.rect.colliderect(enemy.rect): # When player collides with enemy
 				self.health -= 2
@@ -71,6 +83,7 @@ class Player(object):
 					self.rect.bottom = enemy.rect.top
 				if dy < 0: # Moving up; Hit the bottom side of the enemy
 					self.rect.top = enemy.rect.bottom
+
 	def place(self, block, pos):
 		x_cord = pos[0]
 		y_cord = pos[1]
@@ -90,21 +103,24 @@ class Player(object):
 			return
 		if map[index_y][index_x][0] == 1:
 			return
-		map[index_y][index_x][0] = 1
+		map[index_y][index_x][0] = 2
 
 	def destroy(self, block, pos):
 		x_cord = pos[0]
 		y_cord = pos[1]
-		#if block == "wall":
-		for x in range(0, 900, 30):
-			if x <= x_cord and x_cord <= x+30:
-				x_cord = x
-				index_x = x/30
-		for y in range(0, 830, 30):
-			if y <= y_cord <= y+30:
-				y_cord = y
-				index_y = y/30
-		map[index_y][index_x][0] = 0
+		if block == "wall":
+			for x in range(0, 900, 30):
+				if x <= x_cord and x_cord <= x+30:
+					x_cord = x
+					index_x = x/30
+			for y in range(0, 830, 30):
+				if y <= y_cord <= y+30:
+					y_cord = y
+					index_y = y/30
+			if map[index_y][index_x][0] == 2:
+				map[index_y][index_x][0] = 0
+			else: 
+				return
 
 class Enemy(object):
 	def __init__(self, x, y, width, height, health):
@@ -166,6 +182,13 @@ class Wall(object):
 	def destroy(self):
 		walls.remove(self)
 
+class Border(object):
+	def __init__(self, x, y):
+		borders.append(self) # Make it so that this adds it to the map
+		self.x = x
+		self.y = y
+		self.rect = pygame.Rect(x, y, 30, 30)
+
 def gravity(player):
 	surface = False
 	while surface == False:
@@ -174,15 +197,23 @@ def gravity(player):
 			if player.rect.colliderect(wall.rect):
 				player.rect.bottom = wall.rect.top
 				player.falling = False
+		for border in borders:
+			if player.rect.colliderect(border.rect):
+				player.rect.bottom = border.rect.top
+				player.falling = False
 			surface = True		
 
 def map_update():
 	global walls
+	global borders
 	walls = []
+	borders  = []
 	x = y = 0
 	for row in map:
 		for col in row:
 			if col[0] == 1:
+				Border(x, y)
+			if col[0] == 2:
 				Wall(x, y)	
 			x += 30
 		y += 30
@@ -202,12 +233,13 @@ os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
 # Set up the display
-pygame.display.set_caption("BrianCraft")
+pygame.display.set_caption("Brian Craft")
 screen = pygame.display.set_mode((900, 830))
 clock = pygame.time.Clock()
 
 walls = [] # List to hold the walls
 enemies = [] # Lsit all the enemies
+borders = []
 player = Player(30, 300, 25, 55, False, 100, False) # Create the player
 enemy = Enemy(500, 300, 30, 90, 500) # Create the Enemy
 font = pygame.font.SysFont(None, 50)
@@ -248,7 +280,6 @@ map = [
 map_update()
 
 running = True
-
 while running:
 
 # Sets framerate
@@ -295,7 +326,7 @@ while running:
 	if player.health < 1:
 		print 'Game Over!'
 		break
-
+	print len(borders), len(walls)
 # Drawing the scene
 	screen.fill((0, 0, 0))
 	for wall in walls:
@@ -308,6 +339,8 @@ while running:
 	for enemy in enemies:
 		enemy_health = font.render(str(enemy.health), True, (255, 51, 51))
 		screen.blit(enemy_health, (enemy.rect.x-20, enemy.rect.y-40))
+	for border in borders:
+		pygame.draw.rect(screen, (255, 255, 255), border.rect)
 
 	pygame.display.flip()
 	
