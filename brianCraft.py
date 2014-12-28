@@ -28,11 +28,11 @@ class Player(object):
 			if y <= y_cord <= y+30:
 				y_cord = y
 				index_y = y/30
-		if (map[index_y][index_x][0] == 1 and map[index_y][index_x+1][0] == 1):
+		if (tile_map[index_y][index_x][0] == 1 and tile_map[index_y][index_x+1][0] == 1):
 			return
-		elif (map[index_y][index_x-1][0] == 1 and map[index_y][index_x][0] == 1): 
+		elif (tile_map[index_y][index_x-1][0] == 1 and tile_map[index_y][index_x][0] == 1): 
 			return
-		elif map[index_y][index_x][0] == 1:
+		elif tile_map[index_y][index_x][0] == 1:
 			return
 		else:
 			self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
@@ -101,9 +101,9 @@ class Player(object):
 			return
 		if player.rect.y-20 <= y_cord and y_cord <= player.rect.y+(player.height - 5) and player.rect.x-20 <= x_cord and x_cord <= player.rect.x+20:
 			return
-		if map[index_y][index_x][0] == 1:
+		if tile_map[index_y][index_x][0] == 1:
 			return
-		map[index_y][index_x][0] = 2
+		tile_map[index_y][index_x][0] = 2
 
 	def destroy(self, block, pos):
 		x_cord = pos[0]
@@ -117,8 +117,8 @@ class Player(object):
 				if y <= y_cord <= y+30:
 					y_cord = y
 					index_y = y/30
-			if map[index_y][index_x][0] == 2:
-				map[index_y][index_x][0] = 0
+			if tile_map[index_y][index_x][0] == 2:
+				tile_map[index_y][index_x][0] = 0
 			else: 
 				return
 
@@ -174,7 +174,7 @@ class Enemy(object):
 
 class Wall(object):
 	def __init__(self, x, y):
-		walls.append(self) # Make it so that this adds it to the map
+		walls.append(self) # Make it so that this adds it to the tile_map
 		self.x = x
 		self.y = y
 		self.rect = pygame.Rect(x, y, 30, 30)
@@ -184,7 +184,7 @@ class Wall(object):
 
 class Border(object):
 	def __init__(self, x, y):
-		borders.append(self) # Make it so that this adds it to the map
+		borders.append(self) # Make it so that this adds it to the tile_map
 		self.x = x
 		self.y = y
 		self.rect = pygame.Rect(x, y, 30, 30)
@@ -203,13 +203,13 @@ def gravity(player):
 				player.falling = False
 			surface = True		
 
-def map_update():
+def tile_map_update():
 	global walls
 	global borders
 	walls = []
 	borders  = []
 	x = y = 0
-	for row in map:
+	for row in tile_map:
 		for col in row:
 			if col[0] == 1:
 				Border(x, y)
@@ -246,8 +246,8 @@ font = pygame.font.SysFont(None, 50)
 LEFT = 1
 RIGHT = 3
 
-# Move map to different file at some point
-map = [
+# Move tile_map to different file at some point
+tile_map = [
 	[[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1]],
 	[[1],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[1]],
 	[[1],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[1]],
@@ -277,7 +277,7 @@ map = [
 	[[1],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[1]],
 	[[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1]],
 	]
-map_update()
+tile_map_update()
 
 running = True
 while running:
@@ -305,11 +305,11 @@ while running:
 		if e.type == pygame.MOUSEBUTTONUP and e.button == RIGHT:
 			pos = pygame.mouse.get_pos()
 			player.place("wall", pos) # Places the block at that x-y coord
-			map_update() 
+			tile_map_update() 
 		if e.type == pygame.MOUSEBUTTONUP and e.button == LEFT:
 			pos = pygame.mouse.get_pos()
 			player.destroy("wall", pos) # Breaks the block at that x-y coord
-			map_update()
+			tile_map_update()
 
 # Move the player if an arrow key is pressed
 	key = pygame.key.get_pressed()
@@ -326,7 +326,7 @@ while running:
 	if player.health < 1:
 		print 'Game Over!'
 		break
-	print len(borders), len(walls)
+
 # Drawing the scene
 	screen.fill((0, 0, 0))
 	for wall in walls:
