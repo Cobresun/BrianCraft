@@ -2,18 +2,45 @@
 
 import pygame, os
 
-class Living(object):
-	def __init__(self, x, y, width, height, health):
+class Player(object):
+	def __init__(self, x, y, width, height, falling, health, crouching):
 		self.x = x
 		self.y = y
 		self.width = width
 		self.height = height
-		self.rect = pygame.Rect(x, y, width, height)
-		self.health = health
-		living.append(self)
+		self.rect = pygame.Rect(x, y, self.width, self.height)
+		self.falling = True
+		self.health = 1000
+		self.crouching = crouching
+
+	def crouch(self):
+		self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height/2)
+		self.crouching = True
+	
+	def uncrouch(self):
+		x_cord = self.rect.x
+		y_cord = self.rect.y
+		for x in range(0, 900, 30):
+			if x <= x_cord and x_cord <= x+30:
+				x_cord = x
+				index_x = x/30
+		for y in range(0, 830, 30):
+			if y <= y_cord <= y+30:
+				y_cord = y
+				index_y = y/30
+		if (tile_map[index_y][index_x][0] == 1 and tile_map[index_y][index_x+1][0] == 1):
+			return
+		elif (tile_map[index_y][index_x-1][0] == 1 and tile_map[index_y][index_x][0] == 1): 
+			return
+		elif tile_map[index_y][index_x][0] == 1:
+			return
+		else:
+			self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
+			self.crouching = False
 
 	def move(self, dx, dy):
 		# Move each axis separately. Note that this checks for collisions both times.
+		self.falling = True
 		if dx != 0:
 			self.move_single_axis(dx, 0)
 		if dy != 0:
@@ -45,49 +72,17 @@ class Living(object):
 				if dy < 0: # Moving up; Hit the bottom side of the wall
 					self.rect.top = border.rect.bottom
 
-		for live in living:
-			if self.rect.colliderect(live.rect): # When player collides with enemy
-				#self.health -= 2
+		for enemy in enemies:
+			if self.rect.colliderect(enemy.rect): # When player collides with enemy
+				self.health -= 2
 				if dx < 0: # Moving left; Hit the right side of the enemy
-					self.rect.left = live.rect.right
+					self.rect.left = enemy.rect.right
 				if dx > 0: # Moving right; Hit the left side of the enemy
-					self.rect.right = live.rect.left
+					self.rect.right = enemy.rect.left
 				if dy > 0: # Moving down; Hit the top side of the enemy
-					self.rect.bottom = live.rect.top
+					self.rect.bottom = enemy.rect.top
 				if dy < 0: # Moving up; Hit the bottom side of the enemy
-					self.rect.top = live.rect.bottom
-
-class Player(Living):
-	def __init__(self, x, y, width, height, health, crouching, falling):
-		Living.__init__(self, x, y, width, height, health)
-		self.falling = True
-		self.crouching = crouching
-		self.health = health
-
-	def crouch(self):
-		self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height/2)
-		self.crouching = True
-	
-	def uncrouch(self):
-		x_cord = self.rect.x
-		y_cord = self.rect.y
-		for x in range(0, 900, 30):
-			if x <= x_cord and x_cord <= x+30:
-				x_cord = x
-				index_x = x/30
-		for y in range(0, 830, 30):
-			if y <= y_cord <= y+30:
-				y_cord = y
-				index_y = y/30
-		if (tile_map[index_y][index_x][0] == 1 and tile_map[index_y][index_x+1][0] == 1):
-			return
-		elif (tile_map[index_y][index_x-1][0] == 1 and tile_map[index_y][index_x][0] == 1): 
-			return
-		elif tile_map[index_y][index_x][0] == 1:
-			return
-		else:
-			self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
-			self.crouching = False
+					self.rect.top = enemy.rect.bottom
 
 	def place(self, block, pos):
 		x_cord = pos[0]
@@ -127,11 +122,55 @@ class Player(Living):
 			else: 
 				return
 
-class Enemy(Living):
+class Enemy(object):
 	def __init__(self, x, y, width, height, health):
-		Living.__init__(self, x, y, width, height, health)
 		enemies.append(self)
+		self.x = x
+		self.y = y
+		self.height = height
+		self.width = width
+		self.rect = pygame.Rect(x, y, width, height)
 		self.health = health
+		enemies.append(self)
+
+	def move(self, dx, dy):
+		self.rect.x += dx
+		self.rect.y += dy
+		
+		# If you collide with a wall, move out based on velocity
+		for wall in walls:
+			if self.rect.colliderect(wall.rect): # When enemy collides with wall
+				if dx < 0: # Moving left; Hit the right side of the wall
+					self.rect.left = wall.rect.right
+				if dx > 0: # Moving right; Hit the left side of the wall
+					self.rect.right = wall.rect.left
+				if dy > 0: # Moving down; Hit the top side of the wall
+					self.rect.bottom = wall.rect.top
+				if dy < 0: # Moving up; Hit the bottom side of the wall
+					self.rect.top = wall.rect.bottom
+
+		if self.rect.colliderect(player.rect): # When enemy collies with player
+			player.health -= 2
+			if dx < 0: # Moving left; Hit the right side of the player
+				self.rect.left = player.rect.right
+			if dx > 0: # Moving right; Hit the left side of the player
+				self.rect.right = player.rect.left
+			if dy > 0: # Moving down; Hit the top side of the player
+				self.rect.bottom = player.rect.top
+			if dy < 0: # Moving up; Hit the bottom side of the player
+				self.rect.top = player.rect.bottom
+		
+		for enemy in enemies:
+			if enemy != self:
+				if self.rect.colliderect(enemy.rect): # When enemy collies with player
+					if dx < 0: # Moving left; Hit the right side of the player
+						self.rect.left = enemy.rect.right
+					if dx > 0: # Moving right; Hit the left side of the player
+						self.rect.right = enemy.rect.left
+					if dy > 0: # Moving down; Hit the top side of the player
+						self.rect.bottom = enemy.rect.top
+					if dy < 0: # Moving up; Hit the bottom side of the player
+						self.rect.top = enemy.rect.bottom
 
 class Wall(object):
 	def __init__(self, x, y):
@@ -150,18 +189,18 @@ class Border(object):
 		self.y = y
 		self.rect = pygame.Rect(x, y, 30, 30)
 
-def gravity(object):
+def gravity(player):
 	surface = False
 	while surface == False:
-		object.rect.y += 3
+		player.rect.y += 3
 		for wall in walls:
-			if object.rect.colliderect(wall.rect):
-				object.rect.bottom = wall.rect.top
-				object.falling = False
+			if player.rect.colliderect(wall.rect):
+				player.rect.bottom = wall.rect.top
+				player.falling = False
 		for border in borders:
-			if object.rect.colliderect(border.rect):
-				object.rect.bottom = border.rect.top
-				object.falling = False
+			if player.rect.colliderect(border.rect):
+				player.rect.bottom = border.rect.top
+				player.falling = False
 			surface = True		
 
 def tile_map_update():
@@ -201,7 +240,6 @@ clock = pygame.time.Clock()
 walls = [] # List to hold the walls
 enemies = [] # Lsit all the enemies
 borders = []
-living = []
 player = Player(30, 300, 25, 55, False, 100, False) # Create the player
 enemy = Enemy(500, 300, 30, 90, 500) # Create the Enemy
 font = pygame.font.SysFont(None, 50)
@@ -248,8 +286,9 @@ while running:
 	clock.tick(60)
 
 # Gravity
-	for live in living:
-		gravity(live)
+	gravity(player)
+	for enemy in enemies:
+		gravity(enemy)
 
 # Enemy AI
 	enemy_AI()
@@ -262,7 +301,7 @@ while running:
 			running = False
 		if e.type == pygame.KEYUP:
 			if e.key == pygame.K_SPACE and player.falling == False and player.crouching == False:
-				player.move(0, -100)
+				player.move(0, -60)
 		if e.type == pygame.MOUSEBUTTONUP and e.button == RIGHT:
 			pos = pygame.mouse.get_pos()
 			player.place("wall", pos) # Places the block at that x-y coord
@@ -283,12 +322,10 @@ while running:
 	else:
 		player.uncrouch()
 
-	"""
 # Game Over
 	if player.health < 1:
 		print 'Game Over!'
 		break
-	"""
 
 # Drawing the scene
 	screen.fill((0, 0, 0))
