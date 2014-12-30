@@ -342,5 +342,4 @@ while running:
 	for border in borders:
 		pygame.draw.rect(screen, (255, 255, 255), border.rect)
 
-	pygame.display.flip()
-	
+	pygame.display.flip()	
