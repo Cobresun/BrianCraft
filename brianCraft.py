@@ -3,7 +3,7 @@
 import pygame, os
 
 class Player(object):
-	def __init__(self, x, y, width, height, falling, health, crouching):
+    def __init__(self, x, y, width, height, falling, health, crouching):
 		self.x = x
 		self.y = y
 		self.width = width
@@ -13,11 +13,11 @@ class Player(object):
 		self.health = 1000
 		self.crouching = crouching
 
-	def crouch(self):
+    def crouch(self):
 		self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height/2)
 		self.crouching = True
 	
-	def uncrouch(self):
+    def uncrouch(self):
 		x_cord = self.rect.x
 		y_cord = self.rect.y
 		for x in range(0, 900, 30):
@@ -38,7 +38,7 @@ class Player(object):
 			self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
 			self.crouching = False
 
-	def move(self, dx, dy):
+    def move(self, dx, dy):
 		# Move each axis separately. Note that this checks for collisions both times.
 		self.falling = True
 		if dx != 0:
@@ -46,7 +46,7 @@ class Player(object):
 		if dy != 0:
 			self.move_single_axis(0, dy)
 
-	def move_single_axis(self, dx, dy):
+    def move_single_axis(self, dx, dy):
 		self.rect.x += dx
 		self.rect.y += dy
 		
@@ -84,7 +84,7 @@ class Player(object):
 				if dy < 0: # Moving up; Hit the bottom side of the enemy
 					self.rect.top = enemy.rect.bottom
 
-	def place(self, block, pos):
+    def place(self, block, pos):
 		x_cord = pos[0]
 		y_cord = pos[1]
 
@@ -105,7 +105,7 @@ class Player(object):
 			return
 		tile_map[index_y][index_x][0] = 2
 
-	def destroy(self, block, pos):
+    def destroy(self, block, pos):
 		x_cord = pos[0]
 		y_cord = pos[1]
 		if block == "wall":
